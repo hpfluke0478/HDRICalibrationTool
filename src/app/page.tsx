@@ -119,7 +119,7 @@ export default function Home() {
     if (!allInputsEntered()) {
       // If a calibration file or view setting is missing, or the user hasn't selected input images/dirs, display error and abort
       alert(
-        "You must enter all calibration files and view settings and select input images or directories before generating an HDR image."
+        "You must enter all non-optional calibration files and view settings and select input images or directories before generating an HDR image."
       );
       return;
     } else if (!responsePaths) {
@@ -177,7 +177,6 @@ export default function Home() {
       !fe_correctionPaths ||
       !v_correctionPaths ||
       !cf_correctionPaths ||
-      !nd_correctionPaths ||
       !viewSettings.diameter ||
       !viewSettings.xleft ||
       !viewSettings.ydown ||

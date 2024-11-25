@@ -323,7 +323,7 @@ pub fn process_image_set(
         response_function,
         config_settings
             .temp_path
-            .join("output1.hdr")
+            .join("merge_exposures.hdr")
             .display()
             .to_string(),
     );
@@ -338,12 +338,12 @@ pub fn process_image_set(
         &config_settings,
         config_settings
             .temp_path
-            .join("output1.hdr")
+            .join("merge_exposures.hdr")
             .display()
             .to_string(),
         config_settings
             .temp_path
-            .join("output2.hdr")
+            .join("nullify_exposure_value.hdr")
             .display()
             .to_string(),
     );
@@ -358,12 +358,12 @@ pub fn process_image_set(
         &config_settings,
         config_settings
             .temp_path
-            .join("output2.hdr")
+            .join("nullify_exposure_value.hdr")
             .display()
             .to_string(),
         config_settings
             .temp_path
-            .join("output3.hdr")
+            .join("crop.hdr")
             .display()
             .to_string(),
         diameter,
@@ -381,12 +381,12 @@ pub fn process_image_set(
         &config_settings,
         config_settings
             .temp_path
-            .join("output3.hdr")
+            .join("crop.hdr")
             .display()
             .to_string(),
         config_settings
             .temp_path
-            .join("output4.hdr")
+            .join("resize.hdr")
             .display()
             .to_string(),
         xdim,
@@ -403,12 +403,12 @@ pub fn process_image_set(
         &config_settings,
         config_settings
             .temp_path
-            .join("output4.hdr")
+            .join("resize.hdr")
             .display()
             .to_string(),
         config_settings
             .temp_path
-            .join("output5.hdr")
+            .join("projection_adjustment.hdr")
             .display()
             .to_string(),
         fisheye_correction_cal,
@@ -424,12 +424,12 @@ pub fn process_image_set(
         &config_settings,
         config_settings
             .temp_path
-            .join("output5.hdr")
+            .join("projection_adjustment.hdr")
             .display()
             .to_string(),
         config_settings
             .temp_path
-            .join("output6.hdr")
+            .join("vignetting_correction.hdr")
             .display()
             .to_string(),
         vignetting_correction_cal,
@@ -440,25 +440,32 @@ pub fn process_image_set(
         return vignetting_effect_correction_result;
     }
 
-    // Apply the neutral density filter.
-    let neutral_density_result: Result<String, String> = neutral_density(
-        &config_settings,
-        config_settings
-            .temp_path
-            .join("output6.hdr")
-            .display()
-            .to_string(),
-        config_settings
-            .temp_path
-            .join("output7.hdr")
-            .display()
-            .to_string(),
-        neutral_density_cal,
-    );
+    // next path (in case ND filter not selected)
+    let mut next_path = "vignetting_correction.hdr";
 
-    // If the command encountered an error, abort pipeline
-    if neutral_density_result.is_err() {
-        return neutral_density_result;
+    if neutral_density_cal.len() > 0 {
+        // Apply the neutral density filter.
+        let neutral_density_result: Result<String, String> = neutral_density(
+            &config_settings,
+            config_settings
+                .temp_path
+                .join("vignetting_correction.hdr")
+                .display()
+                .to_string(),
+            config_settings
+                .temp_path
+                .join("neutral_density.hdr")
+                .display()
+                .to_string(),
+            neutral_density_cal,
+        );
+
+        // If the command encountered an error, abort pipeline
+        if neutral_density_result.is_err() {
+            return neutral_density_result;
+        }
+
+        next_path = "neutral_density.hdr";
     }
 
     // Correct for photometric adjustments
@@ -466,12 +473,12 @@ pub fn process_image_set(
         &config_settings,
         config_settings
             .temp_path
-            .join("output7.hdr")
+            .join(next_path)
             .display()
             .to_string(),
         config_settings
             .temp_path
-            .join("output8.hdr")
+            .join("photometric_adjustment.hdr")
             .display()
             .to_string(),
         photometric_adjustment_cal,
@@ -487,12 +494,12 @@ pub fn process_image_set(
         &config_settings,
         config_settings
             .temp_path
-            .join("output8.hdr")
+            .join("photometric_adjustment.hdr")
             .display()
             .to_string(),
         config_settings
             .temp_path
-            .join("output9.hdr")
+            .join("header_editing.hdr")
             .display()
             .to_string(),
         vertical_angle,

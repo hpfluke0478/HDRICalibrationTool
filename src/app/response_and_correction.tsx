@@ -211,7 +211,7 @@ export default function Response_and_correction({
                 )}
             </div>
             <h2 className="font-bold pt-5" id="nd">
-                Neutral Density Correction
+                Neutral Density Correction (Optional)
             </h2>
             <button
                 onClick={dialogND}
