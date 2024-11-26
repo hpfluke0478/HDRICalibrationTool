@@ -244,7 +244,7 @@ pub async fn pipeline(
 
         // Copy the final output hdr image to output directory
         let copy_result = copy(
-            &config_settings.temp_path.join("output9.hdr"),
+            &config_settings.temp_path.join("header_editing.hdr"),
             output_file_name,
         );
         if copy_result.is_err() {
